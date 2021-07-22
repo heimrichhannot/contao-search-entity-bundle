@@ -46,7 +46,7 @@ class FrontendModuleSearchEntity extends AbstractContaoSearchEntity
 
         // find in blocks
         if (class_exists("HeimrichHannot\Blocks\BlockModuleModel")) {
-            $blockModules = BlockModuleModel::findByModule($id);
+            $blockModules = BlockModuleModel::findByModule($model->id);
 
             if ($blockModules) {
                 foreach ($blockModules as $blockModule) {

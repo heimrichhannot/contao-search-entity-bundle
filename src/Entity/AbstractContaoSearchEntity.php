@@ -10,10 +10,6 @@ namespace HeimrichHannot\SearchEntityBundle\Entity;
 
 use Contao\Model;
 use Exception;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\ArticleSearchEntity;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\ContentElementSearchEntity;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\FrontendModuleSearchEntity;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\PageSearchEntity;
 use HeimrichHannot\SearchEntityBundle\Exception\EntityNotFoundException;
 
 abstract class AbstractContaoSearchEntity implements ContaoSearchEntityInterface
@@ -165,54 +161,6 @@ abstract class AbstractContaoSearchEntity implements ContaoSearchEntityInterface
         }
 
         return $name."\n".$parentResult;
-
-        $result = '';
-        $lastChild = false;
-
-        if ($depth > 0) {
-            $siblings = $this->getChild()->getParents();
-
-            if (\count($siblings) < 2) {
-                $lastChild = true;
-            } else {
-                reset($siblings);
-
-                while ($value = current($siblings)) {
-                    if ($value === $this) {
-                        if (false === next($siblings)) {
-                            $lastChild = true;
-
-                            break;
-                        }
-                    }
-                    next($siblings);
-                }
-            }
-//            if ($lastChild) {
-//                $result .= '└─ ';
-//            } else {
-//                $result .= '├─ ';
-//            }
-        }
-        $result .= $this->getName()."\n";
-
-        $parents = $this->getParents();
-        $parentResult = '';
-
-        foreach ($parents as $parent) {
-            $parentResult .= $parent->render(($depth + 1), $lastChild)."\n";
-        }
-
-        if (!empty($parentResult)) {
-            $lines = explode("\n", trim($parentResult));
-
-            foreach ($lines as $key => $line) {
-                $lines[$key] = ($pLastChild ? '   ' : '│  ').$line;
-            }
-            $parentResult = implode("\n", $lines);
-        }
-
-        return $result.$parentResult;
     }
 
     abstract protected function loadModel(int $id): ?Model;
@@ -221,31 +169,7 @@ abstract class AbstractContaoSearchEntity implements ContaoSearchEntityInterface
 
     protected function addParent(string $table, int $id)
     {
-        switch ($table) {
-            case 'tl_article':
-                $parent = new ArticleSearchEntity($id);
-
-                break;
-
-            case 'tl_content':
-                $parent = new ContentElementSearchEntity($id);
-
-                break;
-
-            case 'tl_module':
-                $parent = new FrontendModuleSearchEntity($id);
-
-                break;
-
-            case 'tl_page':
-                $parent = new PageSearchEntity($id);
-
-                break;
-
-            default:
-                $parent = new NotSupportedSearchEntity($id, $table);
-        }
-
+        $parent = SearchEntityFactory::createSearchEntity($table, $id);
         $parent->setChild($this);
         $this->parents[] = $parent;
     }
