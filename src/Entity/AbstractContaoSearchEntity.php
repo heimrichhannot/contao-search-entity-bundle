@@ -163,6 +163,11 @@ abstract class AbstractContaoSearchEntity implements ContaoSearchEntityInterface
         return $name."\n".$parentResult;
     }
 
+    public static function supported(): bool
+    {
+        return true;
+    }
+
     abstract protected function loadModel(int $id): ?Model;
 
     abstract protected function findName(Model $model): string;

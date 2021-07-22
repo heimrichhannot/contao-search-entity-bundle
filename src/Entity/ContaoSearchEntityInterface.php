@@ -23,5 +23,7 @@ interface ContaoSearchEntityInterface
 
     public function getChild(): self;
 
+    public static function supported(): bool;
+
 //    public function render(int $depth = 0, bool $pLastChild = false);
 }

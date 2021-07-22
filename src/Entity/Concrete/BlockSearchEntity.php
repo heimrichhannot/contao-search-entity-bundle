@@ -31,6 +31,11 @@ class BlockSearchEntity extends AbstractContaoSearchEntity
         $this->addParent('tl_theme', $module->pid);
     }
 
+    public static function supported(): bool
+    {
+        return class_exists("HeimrichHannot\Blocks\BlockModel");
+    }
+
     protected function loadModel(int $id): ?Model
     {
         return BlockModel::findByPk($id);

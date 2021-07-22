@@ -38,7 +38,11 @@ class SearchEntityFactory
         $mapping = static::mapping();
 
         if (isset($mapping[$table])) {
-            $searchEntity = new $mapping[$table]($id);
+            if (!$mapping[$table]::supported()) {
+                $searchEntity = new MissingDependencySearchEntity($id, $table);
+            } else {
+                $searchEntity = new $mapping[$table]($id);
+            }
         } else {
             $searchEntity = new NotSupportedSearchEntity($id, $table);
         }

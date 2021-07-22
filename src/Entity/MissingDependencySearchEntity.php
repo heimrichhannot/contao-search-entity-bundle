@@ -10,7 +10,7 @@ namespace HeimrichHannot\SearchEntityBundle\Entity;
 
 use Contao\Model;
 
-class NotSupportedSearchEntity extends AbstractContaoSearchEntity
+class MissingDependencySearchEntity extends AbstractContaoSearchEntity
 {
     /** @noinspection PhpMissingParentConstructorInspection */
     public function __construct(int $id, string $table)
@@ -19,22 +19,18 @@ class NotSupportedSearchEntity extends AbstractContaoSearchEntity
         $this->name = $table;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getParents(): array
     {
         return [];
     }
 
-    public function getName(): string
-    {
-        return '<fg=black;bg=yellow> Entity not supported: '.$this->name.' [ID: '.$this->id.'] </>';
-    }
-
     public function findParents(Model $model): void
     {
-        // Empty
+    }
+
+    public function getName(): string
+    {
+        return '<fg=black;bg=yellow> Missing dependency for given entity: '.$this->name.' [ID: '.$this->id.']</> ';
     }
 
     protected function loadModel(int $id): ?Model
