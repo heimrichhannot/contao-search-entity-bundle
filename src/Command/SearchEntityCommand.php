@@ -68,7 +68,7 @@ class SearchEntityCommand extends Command
                 .'You can search for entities within the following tables: '
                 .implode(', ', array_keys(SearchEntityFactory::mapping()))."\n\n"
                 .'You can use following aliases for tables: '
-                .'<comment>'.str_replace('=', '</comment> (', http_build_query(static::$tableAliases, null, '), <comment>')).')</comment>'
+                .'<info>'.str_replace('=', '</info> (', http_build_query(static::$tableAliases, null, '), <info>')).')</info>'
             )
         ;
     }
@@ -89,20 +89,8 @@ class SearchEntityCommand extends Command
 
         $type = $input->getArgument('type');
 
-        $tableAliases = [
-            'contentelement' => 'tl_content',
-            'c' => 'tl_content',
-            'frontendmodule' => 'tl_module',
-            'module' => 'tl_module',
-            'm' => 'tl_module',
-            'article' => 'tl_article',
-            'a' => 'tl_article',
-            'page' => 'tl_page',
-            'p' => 'tl_page',
-        ];
-
-        if (isset($tableAliases[$type])) {
-            $type = $tableAliases[$type];
+        if (isset(static::$tableAliases[$type])) {
+            $type = static::$tableAliases[$type];
         }
 
         if ('tl_' !== substr($type, 0, 3)) {

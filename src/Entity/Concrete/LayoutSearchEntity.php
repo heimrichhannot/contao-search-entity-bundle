@@ -10,6 +10,7 @@ namespace HeimrichHannot\SearchEntityBundle\Entity\Concrete;
 
 use Contao\LayoutModel;
 use Contao\Model;
+use Contao\PageModel;
 use Contao\ThemeModel;
 use HeimrichHannot\SearchEntityBundle\Entity\AbstractContaoSearchEntity;
 
@@ -21,6 +22,14 @@ class LayoutSearchEntity extends AbstractContaoSearchEntity
     public function findParents(Model $model): void
     {
         $this->addParent(ThemeModel::getTable(), $model->pid);
+
+        $pages = PageModel::findByLayout($model->id);
+
+        if ($pages) {
+            foreach ($pages as $page) {
+                $this->addParent($page::getTable(), $page->id);
+            }
+        }
     }
 
     protected function loadModel(int $id): ?Model

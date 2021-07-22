@@ -84,6 +84,7 @@ Frontend modules (`tl_module`)
   
 Layouts (`tl_layout`)
 - parent theme
+- pages using this layout
 
 Pages (`tl_page`)
 - parent page
