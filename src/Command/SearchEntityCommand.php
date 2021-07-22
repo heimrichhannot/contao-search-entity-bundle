@@ -15,19 +15,29 @@ use Contao\Model\Collection;
 use Contao\PageModel;
 use HeimrichHannot\Blocks\BlockModel;
 use HeimrichHannot\Blocks\BlockModuleModel;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\ArticleSearchEntity;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\ContentElementSearchEntity;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\FrontendModuleSearchEntity;
-use HeimrichHannot\SearchEntityBundle\Entity\Concrete\PageSearchEntity;
+use HeimrichHannot\SearchEntityBundle\Entity\SearchEntityFactory;
+use HeimrichHannot\SearchEntityBundle\Exception\EntityNotFoundException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SearchEntityCommand extends Command
 {
     protected static $defaultName = 'huh:search-entity';
+
+    protected static $tableAliases = [
+        'contentelement' => 'tl_content',
+        'c' => 'tl_content',
+        'frontendmodule' => 'tl_module',
+        'module' => 'tl_module',
+        'm' => 'tl_module',
+        'article' => 'tl_article',
+        'a' => 'tl_article',
+        'page' => 'tl_page',
+        'p' => 'tl_page',
+    ];
 
     /**
      * @var array
@@ -51,11 +61,15 @@ class SearchEntityCommand extends Command
     protected function configure()
     {
         $this
-            ->addOption('contentelement', 'c', InputOption::VALUE_OPTIONAL, 'The id of an content element', false)
-            ->addOption('frontendmodule', 'm', InputOption::VALUE_OPTIONAL, 'The id of an frontend module', false)
-            ->addOption('article', 'a', InputOption::VALUE_OPTIONAL, 'The id of an article', false)
-            ->addOption('page', 'p', InputOption::VALUE_OPTIONAL, 'The id of an page', false)
-//            ->addOption('layout', 'l', InputOption::VALUE_OPTIONAL, 'The id of an layout', false)
+            ->addArgument('type', InputArgument::REQUIRED, 'The type you search for. Could be a name or a table.')
+            ->addArgument('id', InputArgument::REQUIRED, 'The id or the element you search for.')
+            ->setHelp(
+                "This command located an contao entity an return it's location.\n\n"
+                .'You can search for entities within the following tables: '
+                .implode(', ', array_keys(SearchEntityFactory::mapping()))."\n\n"
+                .'You can use following aliases for tables: '
+                .'<comment>'.str_replace('=', '</comment> (', http_build_query(static::$tableAliases, null, '), <comment>')).')</comment>'
+            )
         ;
     }
 
@@ -67,25 +81,50 @@ class SearchEntityCommand extends Command
 
         $io->title('Show element embedding information');
 
-        if ($input->hasOption('contentelement') && false !== $input->getOption('contentelement')) {
-            $searchEntity = new ContentElementSearchEntity((int) $input->getOption('contentelement'));
-        } elseif ($input->hasOption('frontendmodule') && false !== $input->getOption('frontendmodule')) {
-            $searchEntity = new FrontendModuleSearchEntity((int) $input->getOption('frontendmodule'));
-        } elseif ($input->hasOption('article') && false !== $input->getOption('article')) {
-            $searchEntity = new ArticleSearchEntity((int) $input->getOption('article'));
-        } elseif ($input->hasOption('page') && false !== $input->getOption('page')) {
-            $searchEntity = new PageSearchEntity((int) $input->getOption('page'));
+        $id = $input->getArgument('id');
+
+        if (!is_numeric($id)) {
+            throw new \Exception('Argument id must be an integer.');
         }
 
+        $type = $input->getArgument('type');
+
+        $tableAliases = [
+            'contentelement' => 'tl_content',
+            'c' => 'tl_content',
+            'frontendmodule' => 'tl_module',
+            'module' => 'tl_module',
+            'm' => 'tl_module',
+            'article' => 'tl_article',
+            'a' => 'tl_article',
+            'page' => 'tl_page',
+            'p' => 'tl_page',
+        ];
+
+        if (isset($tableAliases[$type])) {
+            $type = $tableAliases[$type];
+        }
+
+        if ('tl_' !== substr($type, 0, 3)) {
+            throw new \Exception('Type must be a valid type or a valid contao table.');
+        }
+
+        try {
+            $searchEntity = SearchEntityFactory::createSearchEntity($type, (int) $id);
+        } catch (EntityNotFoundException $entityNotFoundException) {
+            $io->error($entityNotFoundException->getMessage());
+
+            if ($io->isVerbose()) {
+                $io->text($entityNotFoundException->getTraceAsString());
+            }
+
+            return 1;
+        }
         $io->write($searchEntity->render());
 
         $io->success('Finished getting element information.');
 
         return 0;
-
-        if ($input->hasOption('layout') && false !== $input->getOption('layout')) {
-            $this->pagesByLayout($input->getOption('layout'));
-        }
     }
 
     protected function createText(string $text, int $depth)

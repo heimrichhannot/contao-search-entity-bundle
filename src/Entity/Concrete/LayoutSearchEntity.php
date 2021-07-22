@@ -11,8 +11,9 @@ namespace HeimrichHannot\SearchEntityBundle\Entity\Concrete;
 use Contao\LayoutModel;
 use Contao\Model;
 use Contao\ThemeModel;
+use HeimrichHannot\SearchEntityBundle\Entity\AbstractContaoSearchEntity;
 
-class LayoutSearchEntity extends \HeimrichHannot\SearchEntityBundle\Entity\AbstractContaoSearchEntity
+class LayoutSearchEntity extends AbstractContaoSearchEntity
 {
     /**
      * @param LayoutModel $model

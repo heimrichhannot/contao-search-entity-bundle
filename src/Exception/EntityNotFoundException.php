@@ -8,14 +8,13 @@
 
 namespace HeimrichHannot\SearchEntityBundle\Exception;
 
-use HeimrichHannot\SearchEntityBundle\Entity\ContaoSearchEntityInterface;
 use Throwable;
 
 class EntityNotFoundException extends \Exception
 {
-    public function __construct(ContaoSearchEntityInterface $entity, $code = 0, Throwable $previous = null)
+    public function __construct(string $type, int $id, $code = 0, Throwable $previous = null)
     {
-        $message = 'Entity '.$entity->getId().'of type '.$entity->getType().' could not be found.';
+        $message = 'Entity '.$id.' of type '.$type.' could not be found.';
 
         parent::__construct($message, $code, $previous);
     }

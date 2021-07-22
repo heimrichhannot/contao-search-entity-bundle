@@ -19,9 +19,9 @@ use HeimrichHannot\SearchEntityBundle\Entity\Concrete\ThemeSearchEntity;
 
 class SearchEntityFactory
 {
-    public static function createSearchEntity(string $table, int $id): ContaoSearchEntityInterface
+    public static function mapping(): array
     {
-        $mapping = [
+        return [
             'tl_article' => ArticleSearchEntity::class,
             'tl_block' => BlockSearchEntity::class,
             'tl_block_module' => BlockModuleSearchEntity::class,
@@ -31,6 +31,11 @@ class SearchEntityFactory
             'tl_page' => PageSearchEntity::class,
             'tl_theme' => ThemeSearchEntity::class,
         ];
+    }
+
+    public static function createSearchEntity(string $table, int $id): ContaoSearchEntityInterface
+    {
+        $mapping = static::mapping();
 
         if (isset($mapping[$table])) {
             $searchEntity = new $mapping[$table]($id);

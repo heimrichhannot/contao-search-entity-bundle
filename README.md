@@ -24,24 +24,44 @@ Install with composer or contao manager
 
 Search is done with the `huh:search-entity` command.
 
-Example:
+Examples:
 
-    php vendor/bin/contao-console huh:search-entity -m 3
+    php vendor/bin/contao-console huh:search-entity module 3
+    php vendor/bin/contao-console huh:search-entity tl_content 15
+
+Help output:
 
 ```
 Usage:
-  huh:search-entity [options]
+  huh:search-entity <type> <id>
+
+Arguments:
+  type                  The type you search for. Could be a name or a table.
+  id                    The id or the element you search for.
 
 Options:
-  -c, --contentelement[=CONTENTELEMENT]  The id of an content element
-  -m, --frontendmodule[=FRONTENDMODULE]  The id of an frontend module
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --ansi            Force ANSI output
+      --no-ansi         Disable ANSI output
+  -n, --no-interaction  Do not ask any interactive question
+  -e, --env=ENV         The Environment name. [default: "dev"]
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+
+Help:
+  This command located an contao entity an return it's location.
+  
+  You can search for entities within the following tables: tl_article, tl_block, tl_block_module, tl_content, tl_layout, tl_module, tl_page, tl_theme
+  
+  You can use following aliases for tables: contentelement (tl_content), c (tl_content), frontendmodule (tl_module), module (tl_module), m (tl_module), article (tl_article), a (tl_article), page (tl_page), p (tl_page)
 ```
 
 ## Information
 
 ### Search locations
 
-A list about where is searched for entities (recursive):
+A list about where is searched for entities (recursive).
 
 Articles (`tl_article`)
 - parent page

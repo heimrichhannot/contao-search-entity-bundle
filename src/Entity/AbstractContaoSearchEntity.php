@@ -45,7 +45,7 @@ abstract class AbstractContaoSearchEntity implements ContaoSearchEntityInterface
         $this->model = $this->loadModel($id);
 
         if (!$this->model) {
-            throw new EntityNotFoundException($this);
+            throw new EntityNotFoundException(static::getType(), $id);
         }
         $this->name = $this->findName($this->model);
     }
