@@ -1,3 +1,5 @@
+> This Bundle is deprecated as the functionality is integratet in [Utils Bundle](https://github.com/heimrichhannot/contao-utils-bundle/blob/master/docs/commands/entity_finder.md).
+
 # Contao Search Entity Bundle
 
 A helper to find where contao entities like frontend module or content elements are located. Currently this bundle contains a command which enabled the search of different entities type and outputs where they are located. Later a backend module is planned.
